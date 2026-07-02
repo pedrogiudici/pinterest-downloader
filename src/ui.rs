@@ -10,7 +10,6 @@ const TEXT: egui::Color32 = egui::Color32::from_rgb(238, 241, 247);
 const MUTED: egui::Color32 = egui::Color32::from_rgb(165, 171, 187);
 const ACCENT: egui::Color32 = egui::Color32::from_rgb(105, 76, 255);
 const ACCENT_HOVER: egui::Color32 = egui::Color32::from_rgb(125, 91, 255);
-const SUCCESS: egui::Color32 = egui::Color32::from_rgb(72, 205, 91);
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct TextInputState {
@@ -221,22 +220,6 @@ impl<O: Output> eframe::App for TextPrinterApp<O> {
                         self.render_new_download_card(ui);
                     });
                     ui.add_space(28.0);
-                });
-
-                ui.with_layout(egui::Layout::bottom_up(egui::Align::Min), |ui| {
-                    ui.separator();
-                    ui.add_space(16.0);
-                    ui.horizontal(|ui| {
-                        ui.add_space(28.0);
-                        ui.label(egui::RichText::new("●").size(18.0).color(SUCCESS));
-                        ui.add_space(10.0);
-                        ui.label(
-                            egui::RichText::new("Pronto para baixar")
-                                .size(16.0)
-                                .color(MUTED),
-                        );
-                    });
-                    ui.add_space(16.0);
                 });
             });
     }
