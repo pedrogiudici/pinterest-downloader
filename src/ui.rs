@@ -90,8 +90,8 @@ impl<O: Output> TextPrinterApp<O> {
 
     fn destination_button_label(&self) -> String {
         match self.state.directory_path() {
-            "" => "📁  Selecionar pasta".to_owned(),
-            path => format!("📁  {}", compact_path(path, 24)),
+            "" => "Selecionar pasta".to_owned(),
+            path => compact_path(path, 14),
         }
     }
 
@@ -99,47 +99,47 @@ impl<O: Output> TextPrinterApp<O> {
         egui::Frame::new()
             .fill(CARD)
             .stroke(egui::Stroke::new(1.0, BORDER))
-            .corner_radius(egui::CornerRadius::same(14))
-            .inner_margin(egui::Margin::symmetric(36, 32))
+            .corner_radius(egui::CornerRadius::same(12))
+            .inner_margin(egui::Margin::symmetric(28, 24))
             .show(ui, |ui| {
                 ui.set_width(ui.available_width());
 
                 ui.horizontal(|ui| {
-                    ui.label(egui::RichText::new("⇩").size(34.0).color(ACCENT));
-                    ui.add_space(12.0);
+                    draw_download_icon(ui, 30.0, ACCENT);
+                    ui.add_space(10.0);
                     ui.vertical(|ui| {
                         ui.label(
                             egui::RichText::new("Novo Download")
-                                .size(26.0)
+                                .size(22.0)
                                 .strong()
                                 .color(TEXT),
                         );
-                        ui.add_space(8.0);
+                        ui.add_space(6.0);
                         ui.label(
                             egui::RichText::new("Cole o link do Pinterest que deseja baixar")
-                                .size(17.0)
+                                .size(15.0)
                                 .color(MUTED),
                         );
                     });
                 });
 
-                ui.add_space(30.0);
+                ui.add_space(24.0);
 
                 ui.horizontal(|ui| {
-                    let input_width = (ui.available_width() - 424.0).max(260.0);
+                    let input_width = (ui.available_width() - 360.0).max(240.0);
                     egui::Frame::new()
                         .fill(egui::Color32::from_rgb(14, 17, 26))
                         .stroke(egui::Stroke::new(1.5, ACCENT))
-                        .corner_radius(egui::CornerRadius::same(8))
-                        .inner_margin(egui::Margin::symmetric(16, 10))
+                        .corner_radius(egui::CornerRadius::same(7))
+                        .inner_margin(egui::Margin::symmetric(14, 8))
                         .show(ui, |ui| {
                             ui.set_width(input_width);
                             ui.horizontal(|ui| {
-                                ui.label(egui::RichText::new("🔗").size(22.0).color(MUTED));
-                                ui.add_space(10.0);
+                                draw_link_icon(ui, 20.0, MUTED);
+                                ui.add_space(8.0);
                                 let text_field = ui.add(
                                     egui::TextEdit::singleline(&mut self.state.text)
-                                        .desired_width(input_width - 50.0)
+                                        .desired_width(input_width - 42.0)
                                         .hint_text("https://br.pinterest.com/pin/..."),
                                 );
 
@@ -151,40 +151,35 @@ impl<O: Output> TextPrinterApp<O> {
                             });
                         });
 
-                    ui.add_space(16.0);
+                    ui.add_space(12.0);
 
                     let folder_label = self.destination_button_label();
-                    if ui
-                        .add(
-                            egui::Button::new(
-                                egui::RichText::new(folder_label).size(16.0).color(TEXT),
-                            )
-                            .fill(CARD_SOFT)
-                            .stroke(egui::Stroke::new(1.0, BORDER))
-                            .corner_radius(egui::CornerRadius::same(8))
-                            .min_size(egui::vec2(210.0, 60.0)),
-                        )
-                        .clicked()
+                    if icon_button(
+                        ui,
+                        egui::vec2(180.0, 48.0),
+                        CARD_SOFT,
+                        egui::Stroke::new(1.0, BORDER),
+                        TEXT,
+                        &folder_label,
+                        paint_folder_icon,
+                    )
+                    .clicked()
                     {
                         self.choose_directory_path();
                     }
 
-                    ui.add_space(16.0);
+                    ui.add_space(12.0);
 
-                    if ui
-                        .add(
-                            egui::Button::new(
-                                egui::RichText::new("⇩  Baixar")
-                                    .size(17.0)
-                                    .strong()
-                                    .color(egui::Color32::WHITE),
-                            )
-                            .fill(ACCENT)
-                            .stroke(egui::Stroke::new(1.0, ACCENT_HOVER))
-                            .corner_radius(egui::CornerRadius::same(8))
-                            .min_size(egui::vec2(160.0, 60.0)),
-                        )
-                        .clicked()
+                    if icon_button(
+                        ui,
+                        egui::vec2(136.0, 48.0),
+                        ACCENT,
+                        egui::Stroke::new(1.0, ACCENT_HOVER),
+                        egui::Color32::WHITE,
+                        "Baixar",
+                        paint_download_icon,
+                    )
+                    .clicked()
                     {
                         self.submit();
                     }
@@ -200,29 +195,134 @@ impl<O: Output> eframe::App for TextPrinterApp<O> {
         egui::CentralPanel::default()
             .frame(egui::Frame::new().fill(BACKGROUND))
             .show(ui, |ui| {
-                ui.add_space(28.0);
+                ui.add_space(22.0);
                 ui.horizontal(|ui| {
-                    ui.add_space(28.0);
-                    ui.label(egui::RichText::new("🦀").size(26.0));
-                    ui.add_space(8.0);
-                    ui.label(
-                        egui::RichText::new("Pinterest Downloader")
-                            .size(20.0)
-                            .color(TEXT),
-                    );
-                });
-
-                ui.add_space(28.0);
-                ui.horizontal(|ui| {
-                    ui.add_space(28.0);
+                    ui.add_space(22.0);
                     ui.vertical(|ui| {
-                        ui.set_width((ui.available_width() - 28.0).max(0.0));
+                        ui.set_width((ui.available_width() - 22.0).max(0.0));
                         self.render_new_download_card(ui);
                     });
                     ui.add_space(28.0);
                 });
             });
     }
+}
+
+fn icon_button(
+    ui: &mut egui::Ui,
+    size: egui::Vec2,
+    fill: egui::Color32,
+    stroke: egui::Stroke,
+    text_color: egui::Color32,
+    label: &str,
+    paint_icon: fn(&egui::Painter, egui::Rect, egui::Color32),
+) -> egui::Response {
+    let (rect, response) = ui.allocate_exact_size(size, egui::Sense::click());
+    let response = response.on_hover_cursor(egui::CursorIcon::PointingHand);
+    let fill = if response.hovered() {
+        fill.gamma_multiply(1.15)
+    } else {
+        fill
+    };
+
+    ui.painter().rect(
+        rect,
+        egui::CornerRadius::same(8),
+        fill,
+        stroke,
+        egui::StrokeKind::Inside,
+    );
+
+    let icon_rect = egui::Rect::from_center_size(
+        egui::pos2(rect.left() + 30.0, rect.center().y),
+        egui::vec2(20.0, 20.0),
+    );
+    paint_icon(ui.painter(), icon_rect, text_color);
+    ui.painter().with_clip_rect(rect.shrink(8.0)).text(
+        egui::pos2(rect.left() + 54.0, rect.center().y),
+        egui::Align2::LEFT_CENTER,
+        label,
+        egui::FontId::proportional(14.0),
+        text_color,
+    );
+
+    response
+}
+
+fn draw_download_icon(ui: &mut egui::Ui, size: f32, color: egui::Color32) {
+    let (rect, _) = ui.allocate_exact_size(egui::vec2(size, size), egui::Sense::hover());
+    paint_download_icon(ui.painter(), rect, color);
+}
+
+fn paint_download_icon(painter: &egui::Painter, rect: egui::Rect, color: egui::Color32) {
+    let size = rect.width().min(rect.height());
+    let stroke = egui::Stroke::new((size / 12.0).max(1.5), color);
+    let center_x = rect.center().x;
+    let top = rect.top() + size * 0.18;
+    let mid = rect.top() + size * 0.58;
+    painter.line_segment(
+        [egui::pos2(center_x, top), egui::pos2(center_x, mid)],
+        stroke,
+    );
+    painter.line_segment(
+        [
+            egui::pos2(center_x - size * 0.18, mid - size * 0.18),
+            egui::pos2(center_x, mid),
+        ],
+        stroke,
+    );
+    painter.line_segment(
+        [
+            egui::pos2(center_x + size * 0.18, mid - size * 0.18),
+            egui::pos2(center_x, mid),
+        ],
+        stroke,
+    );
+    painter.line_segment(
+        [
+            egui::pos2(rect.left() + size * 0.24, rect.bottom() - size * 0.18),
+            egui::pos2(rect.right() - size * 0.24, rect.bottom() - size * 0.18),
+        ],
+        stroke,
+    );
+}
+
+fn draw_link_icon(ui: &mut egui::Ui, size: f32, color: egui::Color32) {
+    let (rect, _) = ui.allocate_exact_size(egui::vec2(size, size), egui::Sense::hover());
+    let painter = ui.painter();
+    let stroke = egui::Stroke::new((size / 12.0).max(1.5), color);
+    painter.line_segment(
+        [
+            egui::pos2(rect.left() + size * 0.33, rect.bottom() - size * 0.33),
+            egui::pos2(rect.right() - size * 0.33, rect.top() + size * 0.33),
+        ],
+        stroke,
+    );
+    painter.circle_stroke(
+        egui::pos2(rect.left() + size * 0.34, rect.bottom() - size * 0.34),
+        size * 0.18,
+        stroke,
+    );
+    painter.circle_stroke(
+        egui::pos2(rect.right() - size * 0.34, rect.top() + size * 0.34),
+        size * 0.18,
+        stroke,
+    );
+}
+
+fn paint_folder_icon(painter: &egui::Painter, rect: egui::Rect, color: egui::Color32) {
+    let size = rect.width().min(rect.height());
+    let stroke = egui::Stroke::new((size / 13.0).max(1.4), color);
+    let points = vec![
+        egui::pos2(rect.left() + size * 0.14, rect.top() + size * 0.34),
+        egui::pos2(rect.left() + size * 0.40, rect.top() + size * 0.34),
+        egui::pos2(rect.left() + size * 0.48, rect.top() + size * 0.44),
+        egui::pos2(rect.right() - size * 0.14, rect.top() + size * 0.44),
+        egui::pos2(rect.right() - size * 0.14, rect.bottom() - size * 0.18),
+        egui::pos2(rect.left() + size * 0.14, rect.bottom() - size * 0.18),
+        egui::pos2(rect.left() + size * 0.14, rect.top() + size * 0.34),
+    ];
+    painter.add(egui::Shape::line(points, stroke));
 }
 
 fn compact_path(path: &str, max_chars: usize) -> String {
@@ -311,6 +411,15 @@ mod tests {
             compact_path("/home/pedro/downloads/pinterest", 12),
             "…s/pinterest"
         );
+    }
+
+    #[test]
+    fn destination_button_label_keeps_long_path_inside_button() {
+        let mut app = TextPrinterApp::with_output(MemoryOutput::default());
+        app.state_mut()
+            .set_directory_path("/home/pedro/downloads/pinterest/videos");
+
+        assert_eq!(app.destination_button_label(), "…terest/videos");
     }
 
     #[test]
