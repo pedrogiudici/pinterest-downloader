@@ -12,6 +12,7 @@ const TEXT: egui::Color32 = egui::Color32::from_rgb(238, 241, 247);
 const MUTED: egui::Color32 = egui::Color32::from_rgb(165, 171, 187);
 const ACCENT: egui::Color32 = egui::Color32::from_rgb(105, 76, 255);
 const ACCENT_HOVER: egui::Color32 = egui::Color32::from_rgb(125, 91, 255);
+const DANGER: egui::Color32 = egui::Color32::from_rgb(220, 53, 69);
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct TextInputState {
@@ -46,6 +47,12 @@ pub enum DownloadStatus {
     Downloading,
     Completed,
     Failed(String),
+}
+
+impl DownloadStatus {
+    fn is_finished(&self) -> bool {
+        matches!(self, Self::Completed | Self::Failed(_))
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -123,6 +130,16 @@ impl<O: Output> TextPrinterApp<O> {
         &self.downloads
     }
 
+    pub fn dismiss_download(&mut self, id: DownloadId) {
+        self.downloads
+            .retain(|download| download.id != id || !download.status.is_finished());
+    }
+
+    pub fn clear_finished_downloads(&mut self) {
+        self.downloads
+            .retain(|download| !download.status.is_finished());
+    }
+
     pub fn apply_download_events(&mut self) {
         let events = self.output.drain_events();
         self.apply_events(events);
@@ -163,7 +180,8 @@ impl<O: Output> TextPrinterApp<O> {
         }
     }
 
-    fn render_download_list(&self, ui: &mut egui::Ui) {
+    fn render_download_history(&mut self, ui: &mut egui::Ui) {
+        let mut dismissed_download_id = None;
         for download in &self.downloads {
             ui.add_space(14.0);
             egui::Frame::new()
@@ -195,8 +213,33 @@ impl<O: Output> TextPrinterApp<O> {
                             };
                             ui.label(egui::RichText::new(label).size(14.0).color(color));
                         });
+
+                        if download.status.is_finished() {
+                            ui.with_layout(
+                                egui::Layout::right_to_left(egui::Align::Center),
+                                |ui| {
+                                    if icon_button(
+                                        ui,
+                                        egui::vec2(128.0, 40.0),
+                                        CARD_SOFT,
+                                        egui::Stroke::new(1.0, DANGER),
+                                        DANGER,
+                                        "Remover",
+                                        paint_trash_icon,
+                                    )
+                                    .clicked()
+                                    {
+                                        dismissed_download_id = Some(download.id);
+                                    }
+                                },
+                            );
+                        }
                     });
                 });
+        }
+
+        if let Some(id) = dismissed_download_id {
+            self.dismiss_download(id);
         }
     }
 
@@ -324,7 +367,7 @@ impl<O: Output> eframe::App for TextPrinterApp<O> {
                             .auto_shrink([false, false])
                             .show(ui, |ui| {
                                 ui.set_width(scroll_rect.width());
-                                self.render_download_list(ui);
+                                self.render_download_history(ui);
                             });
                     });
                 });
@@ -432,6 +475,66 @@ fn draw_link_icon(ui: &mut egui::Ui, size: f32, color: egui::Color32) {
         size * 0.18,
         stroke,
     );
+}
+
+fn paint_trash_icon(painter: &egui::Painter, rect: egui::Rect, color: egui::Color32) {
+    let size = rect.width().min(rect.height());
+    let stroke = egui::Stroke::new((size / 13.0).max(1.4), color);
+
+    let lid_y = rect.top() + size * 0.30;
+    let lid_left = rect.left() + size * 0.18;
+    let lid_right = rect.right() - size * 0.18;
+    let handle_top = rect.top() + size * 0.15;
+    let handle_bottom = rect.top() + size * 0.23;
+    let handle_left = rect.left() + size * 0.39;
+    let handle_right = rect.right() - size * 0.39;
+
+    painter.line_segment(
+        [egui::pos2(lid_left, lid_y), egui::pos2(lid_right, lid_y)],
+        stroke,
+    );
+    painter.line_segment(
+        [
+            egui::pos2(handle_left, handle_bottom),
+            egui::pos2(handle_left, handle_top),
+        ],
+        stroke,
+    );
+    painter.line_segment(
+        [
+            egui::pos2(handle_left, handle_top),
+            egui::pos2(handle_right, handle_top),
+        ],
+        stroke,
+    );
+    painter.line_segment(
+        [
+            egui::pos2(handle_right, handle_top),
+            egui::pos2(handle_right, handle_bottom),
+        ],
+        stroke,
+    );
+
+    let body = egui::Rect::from_min_max(
+        egui::pos2(rect.left() + size * 0.26, rect.top() + size * 0.36),
+        egui::pos2(rect.right() - size * 0.26, rect.bottom() - size * 0.13),
+    );
+    painter.rect_stroke(
+        body,
+        egui::CornerRadius::same(1),
+        stroke,
+        egui::StrokeKind::Inside,
+    );
+
+    for x in [0.39, 0.50, 0.61] {
+        painter.line_segment(
+            [
+                egui::pos2(rect.left() + size * x, body.top() + size * 0.10),
+                egui::pos2(rect.left() + size * x, body.bottom() - size * 0.10),
+            ],
+            stroke,
+        );
+    }
 }
 
 fn paint_folder_icon(painter: &egui::Painter, rect: egui::Rect, color: egui::Color32) {
@@ -602,5 +705,47 @@ mod tests {
 
         assert_eq!(app.downloads()[0].filename(), "video.mp4");
         assert_eq!(app.downloads()[0].status(), &DownloadStatus::Completed);
+    }
+
+    #[test]
+    fn dismiss_download_removes_finished_download_from_history() {
+        let mut app = TextPrinterApp::with_output(MemoryOutput::default());
+        app.submit();
+        app.apply_events(vec![DownloadEvent {
+            id: 1,
+            kind: DownloadEventKind::Completed,
+        }]);
+
+        app.dismiss_download(1);
+
+        assert!(app.downloads().is_empty());
+    }
+
+    #[test]
+    fn dismiss_download_keeps_active_download() {
+        let mut app = TextPrinterApp::with_output(MemoryOutput::default());
+        app.submit();
+
+        app.dismiss_download(1);
+
+        assert_eq!(app.downloads().len(), 1);
+        assert_eq!(app.downloads()[0].status(), &DownloadStatus::Downloading);
+    }
+
+    #[test]
+    fn clear_finished_downloads_keeps_active_downloads() {
+        let mut app = TextPrinterApp::with_output(MemoryOutput::default());
+        app.submit();
+        app.submit();
+        app.apply_events(vec![DownloadEvent {
+            id: 1,
+            kind: DownloadEventKind::Completed,
+        }]);
+
+        app.clear_finished_downloads();
+
+        assert_eq!(app.downloads().len(), 1);
+        assert_eq!(app.downloads()[0].id(), 2);
+        assert_eq!(app.downloads()[0].status(), &DownloadStatus::Downloading);
     }
 }
