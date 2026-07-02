@@ -2,6 +2,7 @@ use std::time::Duration;
 
 use eframe::egui;
 
+use crate::icons::{Icon, colored_source, draw_icon};
 use crate::output::{ConsoleOutput, DownloadEvent, DownloadEventKind, DownloadId, Output};
 
 const BACKGROUND: egui::Color32 = egui::Color32::from_rgb(13, 16, 24);
@@ -192,7 +193,7 @@ impl<O: Output> TextPrinterApp<O> {
                 .show(ui, |ui| {
                     ui.set_width(ui.available_width());
                     ui.horizontal(|ui| {
-                        draw_download_icon(ui, 24.0, ACCENT);
+                        draw_icon(ui, Icon::Download, 24.0, ACCENT);
                         ui.add_space(10.0);
                         ui.vertical(|ui| {
                             ui.label(
@@ -225,7 +226,7 @@ impl<O: Output> TextPrinterApp<O> {
                                         egui::Stroke::new(1.0, DANGER),
                                         DANGER,
                                         "Remover",
-                                        paint_trash_icon,
+                                        Icon::Trash,
                                     )
                                     .clicked()
                                     {
@@ -253,7 +254,7 @@ impl<O: Output> TextPrinterApp<O> {
                 ui.set_width(ui.available_width());
 
                 ui.horizontal(|ui| {
-                    draw_download_icon(ui, 30.0, ACCENT);
+                    draw_icon(ui, Icon::Download, 30.0, ACCENT);
                     ui.add_space(10.0);
                     ui.vertical(|ui| {
                         ui.label(
@@ -274,7 +275,7 @@ impl<O: Output> TextPrinterApp<O> {
                 ui.add_space(24.0);
 
                 ui.horizontal(|ui| {
-                    let input_width = (ui.available_width() - 360.0).max(240.0);
+                    let input_width = (ui.available_width() - 371.0).max(240.0);
                     egui::Frame::new()
                         .fill(egui::Color32::from_rgb(14, 17, 26))
                         .stroke(egui::Stroke::new(1.5, ACCENT))
@@ -283,7 +284,7 @@ impl<O: Output> TextPrinterApp<O> {
                         .show(ui, |ui| {
                             ui.set_width(input_width);
                             ui.horizontal(|ui| {
-                                draw_link_icon(ui, 20.0, MUTED);
+                                draw_icon(ui, Icon::Link, 20.0, MUTED);
                                 ui.add_space(8.0);
                                 let text_field = ui.add(
                                     egui::TextEdit::singleline(&mut self.state.text)
@@ -309,7 +310,7 @@ impl<O: Output> TextPrinterApp<O> {
                         egui::Stroke::new(1.0, BORDER),
                         TEXT,
                         &folder_label,
-                        paint_folder_icon,
+                        Icon::Folder,
                     )
                     .clicked()
                     {
@@ -323,9 +324,9 @@ impl<O: Output> TextPrinterApp<O> {
                         egui::vec2(136.0, 48.0),
                         ACCENT,
                         egui::Stroke::new(1.0, ACCENT_HOVER),
-                        egui::Color32::WHITE,
+                        TEXT,
                         "Baixar",
-                        paint_download_icon,
+                        Icon::Download,
                     )
                     .clicked()
                     {
@@ -382,7 +383,7 @@ fn icon_button(
     stroke: egui::Stroke,
     text_color: egui::Color32,
     label: &str,
-    paint_icon: fn(&egui::Painter, egui::Rect, egui::Color32),
+    icon: Icon,
 ) -> egui::Response {
     let (rect, response) = ui.allocate_exact_size(size, egui::Sense::click());
     let response = response.on_hover_cursor(egui::CursorIcon::PointingHand);
@@ -404,7 +405,7 @@ fn icon_button(
         egui::pos2(rect.left() + 30.0, rect.center().y),
         egui::vec2(20.0, 20.0),
     );
-    paint_icon(ui.painter(), icon_rect, text_color);
+    egui::Image::new(colored_source(icon, text_color)).paint_at(ui, icon_rect);
     ui.painter().with_clip_rect(rect.shrink(8.0)).text(
         egui::pos2(rect.left() + 54.0, rect.center().y),
         egui::Align2::LEFT_CENTER,
@@ -414,142 +415,6 @@ fn icon_button(
     );
 
     response
-}
-
-fn draw_download_icon(ui: &mut egui::Ui, size: f32, color: egui::Color32) {
-    let (rect, _) = ui.allocate_exact_size(egui::vec2(size, size), egui::Sense::hover());
-    paint_download_icon(ui.painter(), rect, color);
-}
-
-fn paint_download_icon(painter: &egui::Painter, rect: egui::Rect, color: egui::Color32) {
-    let size = rect.width().min(rect.height());
-    let stroke = egui::Stroke::new((size / 12.0).max(1.5), color);
-    let center_x = rect.center().x;
-    let top = rect.top() + size * 0.18;
-    let mid = rect.top() + size * 0.58;
-    painter.line_segment(
-        [egui::pos2(center_x, top), egui::pos2(center_x, mid)],
-        stroke,
-    );
-    painter.line_segment(
-        [
-            egui::pos2(center_x - size * 0.18, mid - size * 0.18),
-            egui::pos2(center_x, mid),
-        ],
-        stroke,
-    );
-    painter.line_segment(
-        [
-            egui::pos2(center_x + size * 0.18, mid - size * 0.18),
-            egui::pos2(center_x, mid),
-        ],
-        stroke,
-    );
-    painter.line_segment(
-        [
-            egui::pos2(rect.left() + size * 0.24, rect.bottom() - size * 0.18),
-            egui::pos2(rect.right() - size * 0.24, rect.bottom() - size * 0.18),
-        ],
-        stroke,
-    );
-}
-
-fn draw_link_icon(ui: &mut egui::Ui, size: f32, color: egui::Color32) {
-    let (rect, _) = ui.allocate_exact_size(egui::vec2(size, size), egui::Sense::hover());
-    let painter = ui.painter();
-    let stroke = egui::Stroke::new((size / 12.0).max(1.5), color);
-    painter.line_segment(
-        [
-            egui::pos2(rect.left() + size * 0.33, rect.bottom() - size * 0.33),
-            egui::pos2(rect.right() - size * 0.33, rect.top() + size * 0.33),
-        ],
-        stroke,
-    );
-    painter.circle_stroke(
-        egui::pos2(rect.left() + size * 0.34, rect.bottom() - size * 0.34),
-        size * 0.18,
-        stroke,
-    );
-    painter.circle_stroke(
-        egui::pos2(rect.right() - size * 0.34, rect.top() + size * 0.34),
-        size * 0.18,
-        stroke,
-    );
-}
-
-fn paint_trash_icon(painter: &egui::Painter, rect: egui::Rect, color: egui::Color32) {
-    let size = rect.width().min(rect.height());
-    let stroke = egui::Stroke::new((size / 13.0).max(1.4), color);
-
-    let lid_y = rect.top() + size * 0.30;
-    let lid_left = rect.left() + size * 0.18;
-    let lid_right = rect.right() - size * 0.18;
-    let handle_top = rect.top() + size * 0.15;
-    let handle_bottom = rect.top() + size * 0.23;
-    let handle_left = rect.left() + size * 0.39;
-    let handle_right = rect.right() - size * 0.39;
-
-    painter.line_segment(
-        [egui::pos2(lid_left, lid_y), egui::pos2(lid_right, lid_y)],
-        stroke,
-    );
-    painter.line_segment(
-        [
-            egui::pos2(handle_left, handle_bottom),
-            egui::pos2(handle_left, handle_top),
-        ],
-        stroke,
-    );
-    painter.line_segment(
-        [
-            egui::pos2(handle_left, handle_top),
-            egui::pos2(handle_right, handle_top),
-        ],
-        stroke,
-    );
-    painter.line_segment(
-        [
-            egui::pos2(handle_right, handle_top),
-            egui::pos2(handle_right, handle_bottom),
-        ],
-        stroke,
-    );
-
-    let body = egui::Rect::from_min_max(
-        egui::pos2(rect.left() + size * 0.26, rect.top() + size * 0.36),
-        egui::pos2(rect.right() - size * 0.26, rect.bottom() - size * 0.13),
-    );
-    painter.rect_stroke(
-        body,
-        egui::CornerRadius::same(1),
-        stroke,
-        egui::StrokeKind::Inside,
-    );
-
-    for x in [0.39, 0.50, 0.61] {
-        painter.line_segment(
-            [
-                egui::pos2(rect.left() + size * x, body.top() + size * 0.10),
-                egui::pos2(rect.left() + size * x, body.bottom() - size * 0.10),
-            ],
-            stroke,
-        );
-    }
-}
-
-fn paint_folder_icon(painter: &egui::Painter, rect: egui::Rect, color: egui::Color32) {
-    let size = rect.width().min(rect.height());
-    let stroke = egui::Stroke::new((size / 13.0).max(1.4), color);
-    let points = vec![
-        egui::pos2(rect.left() + size * 0.14, rect.top() + size * 0.34),
-        egui::pos2(rect.left() + size * 0.40, rect.top() + size * 0.34),
-        egui::pos2(rect.left() + size * 0.48, rect.top() + size * 0.44),
-        egui::pos2(rect.right() - size * 0.14, rect.top() + size * 0.44),
-        egui::pos2(rect.right() - size * 0.14, rect.bottom() - size * 0.18),
-        egui::pos2(rect.left() + size * 0.14, rect.bottom() - size * 0.18),
-        egui::pos2(rect.left() + size * 0.14, rect.top() + size * 0.34),
-    ];
-    painter.add(egui::Shape::line(points, stroke));
 }
 
 fn compact_path(path: &str, max_chars: usize) -> String {

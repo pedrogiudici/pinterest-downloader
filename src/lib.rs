@@ -1,4 +1,5 @@
 pub mod downloader;
+pub mod icons;
 pub mod output;
 pub mod ui;
 

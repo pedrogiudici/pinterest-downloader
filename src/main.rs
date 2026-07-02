@@ -6,6 +6,9 @@ fn main() -> eframe::Result<()> {
     eframe::run_native(
         "Downloader",
         options,
-        Box::new(|_creation_context| Ok(Box::new(TextPrinterApp::new()))),
+        Box::new(|creation_context| {
+            egui_extras::install_image_loaders(&creation_context.egui_ctx);
+            Ok(Box::new(TextPrinterApp::new()))
+        }),
     )
 }

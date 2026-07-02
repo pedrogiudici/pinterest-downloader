@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 eframe = "0.35.0"
+egui_extras = { version = "0.35.0", features = ["svg"] }
 rfd = "0.15.4"
 ureq = { version = "2.12.1", features = ["tls"] }
 regex = "1.11.1"
