@@ -65,11 +65,18 @@ pub fn filename_from_url(url: &str) -> Option<String> {
     // Remove qualquer query string ou fragmento
     let name = last_segment.split('?').next().unwrap_or(last_segment);
     let name = name.split('#').next().unwrap_or(name);
-    if name.is_empty() { None } else { Some(name.to_owned()) }
+    if name.is_empty() {
+        None
+    } else {
+        Some(name.to_owned())
+    }
 }
 
 /// Faz o download do vídeo a partir da URL e salva no caminho de destino.
-pub fn download_video(download_url: &str, destination: &std::path::Path) -> Result<(), DownloadError> {
+pub fn download_video(
+    download_url: &str,
+    destination: &std::path::Path,
+) -> Result<(), DownloadError> {
     let response = ureq::get(download_url)
         .set(
             "User-Agent",
@@ -153,7 +160,8 @@ mod tests {
 
     #[test]
     fn filename_from_url_extracts_mp4_name() {
-        let url = "https://v1.pinimg.com/videos/iht/720p/b7/1d/60/b71d60335f58562e9d2da8d0e06e4013.mp4";
+        let url =
+            "https://v1.pinimg.com/videos/iht/720p/b7/1d/60/b71d60335f58562e9d2da8d0e06e4013.mp4";
         assert_eq!(
             filename_from_url(url),
             Some("b71d60335f58562e9d2da8d0e06e4013.mp4".to_owned())
@@ -193,16 +201,10 @@ mod tests {
         let _ = std::fs::remove_file(&dest);
 
         let handle = std::thread::spawn(move || {
-            use std::io::Read;
-            let mut request = server.recv().unwrap();
-            let response = tiny_http::Response::from_string("fake mp4 content")
-                .with_header(
-                    tiny_http::Header::from_bytes(
-                        &b"Content-Type"[..],
-                        &b"video/mp4"[..],
-                    )
-                    .unwrap(),
-                );
+            let request = server.recv().unwrap();
+            let response = tiny_http::Response::from_string("fake mp4 content").with_header(
+                tiny_http::Header::from_bytes(&b"Content-Type"[..], &b"video/mp4"[..]).unwrap(),
+            );
             request.respond(response).unwrap();
         });
 
