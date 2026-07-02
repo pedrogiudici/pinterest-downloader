@@ -28,8 +28,18 @@ pub enum DownloadError {
 /// // https://v1.pinimg.com/videos/iht/720p/b7/1d/60/b71d60335f58562e9d2da8d0e06e4013.mp4
 /// ```
 pub fn extract_download_url(pin_url: &str) -> Result<String, DownloadError> {
-    let html = fetch_page(pin_url).map_err(DownloadError::Request)?;
+    let normalized_url = normalize_url(pin_url);
+    let html = fetch_page(&normalized_url).map_err(DownloadError::Request)?;
     find_mp4_url(&html).ok_or(DownloadError::VideoNotFound)
+}
+
+fn normalize_url(url: &str) -> String {
+    let url = url.trim();
+    if url.starts_with("http://") || url.starts_with("https://") {
+        url.to_owned()
+    } else {
+        format!("https://{url}")
+    }
 }
 
 fn fetch_page(url: &str) -> Result<String, String> {
@@ -134,6 +144,30 @@ mod tests {
                 "https://v1.pinimg.com/videos/iht/720p/b7/1d/60/b71d60335f58562e9d2da8d0e06e4013.mp4"
                     .to_string()
             )
+        );
+    }
+
+    #[test]
+    fn normalize_url_keeps_url_with_scheme() {
+        assert_eq!(
+            normalize_url("https://www.pinterest.com/pin/879890845950202614/"),
+            "https://www.pinterest.com/pin/879890845950202614/"
+        );
+    }
+
+    #[test]
+    fn normalize_url_adds_https_when_scheme_is_missing() {
+        assert_eq!(
+            normalize_url("www.pinterest.com/pin/879890845950202614/"),
+            "https://www.pinterest.com/pin/879890845950202614/"
+        );
+    }
+
+    #[test]
+    fn normalize_url_trims_spaces() {
+        assert_eq!(
+            normalize_url("  www.pinterest.com/pin/879890845950202614/  "),
+            "https://www.pinterest.com/pin/879890845950202614/"
         );
     }
 
