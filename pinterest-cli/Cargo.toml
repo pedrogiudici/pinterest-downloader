@@ -1,7 +1,0 @@
-[package]
-name = "pinterest-cli"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-pinterest-core = { path = "../pinterest-core" }

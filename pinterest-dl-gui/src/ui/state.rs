@@ -1,4 +1,4 @@
-use pinterest_core::DownloadId;
+use pinterest_dl_core::DownloadId;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct TextInputState {

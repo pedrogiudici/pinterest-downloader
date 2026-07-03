@@ -1,6 +1,6 @@
 use eframe::egui;
 
-use pinterest_core::Output;
+use pinterest_dl_core::Output;
 
 use crate::icons::{draw_icon, Icon};
 

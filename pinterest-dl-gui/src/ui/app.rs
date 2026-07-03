@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use eframe::egui;
 
-use pinterest_core::{DownloadEvent, DownloadEventKind, DownloadId, DownloadWorker, Output};
+use pinterest_dl_core::{DownloadEvent, DownloadEventKind, DownloadId, DownloadWorker, Output};
 
 use super::state::{DownloadCardState, DownloadStatus, TextInputState};
 use super::theme::{configure_download_theme, BACKGROUND};

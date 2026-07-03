@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use pinterest_core::{download_video, extract_download_url, filename_from_url};
+use pinterest_dl_core::{download_video, extract_download_url, filename_from_url};
 
 fn main() {
     let config = Config::build(std::env::args()).unwrap_or_else(|err| {

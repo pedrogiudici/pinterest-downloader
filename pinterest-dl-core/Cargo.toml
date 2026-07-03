@@ -1,5 +1,5 @@
 [package]
-name = "pinterest-core"
+name = "pinterest-dl-core"
 version = "0.1.0"
 edition = "2024"
 
