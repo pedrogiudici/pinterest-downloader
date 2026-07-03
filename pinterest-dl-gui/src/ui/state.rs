@@ -15,10 +15,6 @@ impl TextInputState {
         &self.url
     }
 
-    pub fn set_url(&mut self, url: impl Into<String>) {
-        self.url = url.into();
-    }
-
     pub fn directory_path(&self) -> &str {
         &self.directory_path
     }
@@ -48,19 +44,7 @@ pub struct DownloadCardState {
     pub(super) status: DownloadStatus,
 }
 
-impl DownloadCardState {
-    pub fn id(&self) -> DownloadId {
-        self.id
-    }
-
-    pub fn filename(&self) -> &str {
-        &self.filename
-    }
-
-    pub fn status(&self) -> &DownloadStatus {
-        &self.status
-    }
-}
+impl DownloadCardState {}
 
 #[cfg(test)]
 mod tests {
@@ -78,7 +62,7 @@ mod tests {
     fn state_updates_url() {
         let mut state = TextInputState::new();
 
-        state.set_url("https://br.pinterest.com/pin/123");
+        state.url = "https://br.pinterest.com/pin/123".to_owned();
 
         assert_eq!(state.url(), "https://br.pinterest.com/pin/123");
     }

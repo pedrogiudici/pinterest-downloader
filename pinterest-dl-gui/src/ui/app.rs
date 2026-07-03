@@ -37,14 +37,6 @@ impl<O: Output> DownloaderApp<O> {
         }
     }
 
-    pub fn state(&self) -> &TextInputState {
-        &self.state
-    }
-
-    pub fn state_mut(&mut self) -> &mut TextInputState {
-        &mut self.state
-    }
-
     pub fn submit(&mut self) {
         let id = self.next_download_id;
         self.next_download_id += 1;
@@ -57,18 +49,9 @@ impl<O: Output> DownloaderApp<O> {
             .handle_submission(self.state.url(), self.state.directory_path(), id);
     }
 
-    pub fn downloads(&self) -> &[DownloadCardState] {
-        &self.downloads
-    }
-
     pub fn dismiss_download(&mut self, id: DownloadId) {
         self.downloads
             .retain(|download| download.id != id || !download.status.is_finished());
-    }
-
-    pub fn clear_finished_downloads(&mut self) {
-        self.downloads
-            .retain(|download| !download.status.is_finished());
     }
 
     pub fn apply_download_events(&mut self) {
@@ -100,9 +83,6 @@ impl<O: Output> DownloaderApp<O> {
         }
     }
 
-    pub fn into_output(self) -> O {
-        self.output
-    }
 }
 
 impl<O: Output> eframe::App for DownloaderApp<O> {
@@ -170,8 +150,7 @@ mod tests {
     #[test]
     fn destination_button_label_keeps_long_path_inside_button() {
         let mut app = DownloaderApp::with_output(MemoryOutput::default());
-        app.state_mut()
-            .set_directory_path("/home/pedro/downloads/pinterest/videos");
+        app.state.directory_path = "/home/pedro/downloads/pinterest/videos".to_owned();
 
         assert_eq!(app.destination_button_label(), "\u{2026}terest/videos");
     }
@@ -179,12 +158,12 @@ mod tests {
     #[test]
     fn submit_sends_current_text_and_directory_path_to_output() {
         let mut app = DownloaderApp::with_output(MemoryOutput::default());
-        app.state_mut().set_url("https://br.pinterest.com/pin/123");
-        app.state_mut().set_directory_path("/home/pedro/downloads");
+        app.state.url = "https://br.pinterest.com/pin/123".to_owned();
+        app.state.directory_path = "/home/pedro/downloads".to_owned();
 
         app.submit();
 
-        let output = app.into_output();
+        let output = app.output;
         assert_eq!(
             output.lines,
             vec!["https://br.pinterest.com/pin/123", "/home/pedro/downloads"]
@@ -198,10 +177,10 @@ mod tests {
 
         app.submit();
 
-        assert_eq!(app.downloads().len(), 1);
-        assert_eq!(app.downloads()[0].id(), 1);
-        assert_eq!(app.downloads()[0].filename(), "Preparing download...");
-        assert_eq!(app.downloads()[0].status(), &DownloadStatus::Downloading);
+        assert_eq!(app.downloads.len(), 1);
+        assert_eq!(app.downloads[0].id, 1);
+        assert_eq!(app.downloads[0].filename, "Preparing download...");
+        assert_eq!(app.downloads[0].status, DownloadStatus::Downloading);
     }
 
     #[test]
@@ -223,8 +202,8 @@ mod tests {
 
         app.apply_download_events();
 
-        assert_eq!(app.downloads()[0].filename(), "video.mp4");
-        assert_eq!(app.downloads()[0].status(), &DownloadStatus::Completed);
+        assert_eq!(app.downloads[0].filename, "video.mp4");
+        assert_eq!(app.downloads[0].status, DownloadStatus::Completed);
     }
 
     #[test]
@@ -238,7 +217,7 @@ mod tests {
 
         app.dismiss_download(1);
 
-        assert!(app.downloads().is_empty());
+        assert!(app.downloads.is_empty());
     }
 
     #[test]
@@ -248,8 +227,8 @@ mod tests {
 
         app.dismiss_download(1);
 
-        assert_eq!(app.downloads().len(), 1);
-        assert_eq!(app.downloads()[0].status(), &DownloadStatus::Downloading);
+        assert_eq!(app.downloads.len(), 1);
+        assert_eq!(app.downloads[0].status, DownloadStatus::Downloading);
     }
 
     #[test]
@@ -262,10 +241,10 @@ mod tests {
             kind: DownloadEventKind::Completed,
         }]);
 
-        app.clear_finished_downloads();
+        app.downloads.retain(|d| !d.status.is_finished());
 
-        assert_eq!(app.downloads().len(), 1);
-        assert_eq!(app.downloads()[0].id(), 2);
-        assert_eq!(app.downloads()[0].status(), &DownloadStatus::Downloading);
+        assert_eq!(app.downloads.len(), 1);
+        assert_eq!(app.downloads[0].id, 2);
+        assert_eq!(app.downloads[0].status, DownloadStatus::Downloading);
     }
 }
