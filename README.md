@@ -12,7 +12,7 @@
 
 ## Screenshot
 
-[print]
+![Screenshot](screenshots/print.png)
 
 ## Features
 
