@@ -1,11 +1,14 @@
+use std::env;
 use std::path::PathBuf;
 
 use pinterest_dl_core::{download_video, extract_download_url, filename_from_url};
 
 fn main() {
-    let config = Config::build(std::env::args()).unwrap_or_else(|err| {
+    let mut args = env::args();
+    let bin_name = args.next().unwrap_or_default();
+    let config = Config::build(args).unwrap_or_else(|err| {
         eprintln!("Error: {err}");
-        eprintln!("Usage: {} <pin-url> [destination-directory]", std::env::args().next().unwrap_or_default());
+        eprintln!("Usage: {bin_name} <pin-url> [destination-directory]");
         std::process::exit(1);
     });
 
@@ -28,7 +31,7 @@ impl Config {
         let dest_dir = args
             .next()
             .map(PathBuf::from)
-            .unwrap_or_else(|| std::env::current_dir().unwrap_or_default());
+            .unwrap_or_else(|| env::current_dir().unwrap_or_default());
 
         Ok(Config { pin_url, dest_dir })
     }
