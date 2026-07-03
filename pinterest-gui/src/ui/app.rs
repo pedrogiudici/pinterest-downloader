@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use eframe::egui;
 
-use crate::output::{DownloadWorker, DownloadEvent, DownloadEventKind, DownloadId, Output};
+use pinterest_core::{DownloadEvent, DownloadEventKind, DownloadId, DownloadWorker, Output};
 
 use super::state::{DownloadCardState, DownloadStatus, TextInputState};
 use super::theme::{configure_download_theme, BACKGROUND};
@@ -54,7 +54,7 @@ impl<O: Output> DownloaderApp<O> {
             status: DownloadStatus::Downloading,
         });
         self.output
-            .handle_submission(            self.state.url(), self.state.directory_path(), id);
+            .handle_submission(self.state.url(), self.state.directory_path(), id);
     }
 
     pub fn downloads(&self) -> &[DownloadCardState] {
@@ -103,7 +103,6 @@ impl<O: Output> DownloaderApp<O> {
     pub fn into_output(self) -> O {
         self.output
     }
-
 }
 
 impl<O: Output> eframe::App for DownloaderApp<O> {

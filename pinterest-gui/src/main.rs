@@ -1,4 +1,9 @@
-use pinterest_downloader::DownloaderApp;
+#![allow(dead_code)]
+
+mod icons;
+mod ui;
+
+use ui::DownloaderApp;
 
 fn main() -> eframe::Result<()> {
     let options = eframe::NativeOptions::default();

@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use pinterest_downloader::{download_video, extract_download_url, filename_from_url};
+use pinterest_core::{download_video, extract_download_url, filename_from_url};
 
 fn main() {
     let config = Config::build(std::env::args()).unwrap_or_else(|err| {
@@ -22,7 +22,7 @@ struct Config {
 
 impl Config {
     fn build(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
-        args.next(); // nome do binário
+        args.next();
 
         let pin_url = args.next().ok_or("URL do pin é obrigatória")?;
         let dest_dir = args

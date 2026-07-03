@@ -1,0 +1,10 @@
+[package]
+name = "pinterest-gui"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pinterest-core = { path = "../pinterest-core" }
+eframe = "0.35.0"
+egui_extras = { version = "0.35.0", features = ["svg"] }
+rfd = "0.15.4"

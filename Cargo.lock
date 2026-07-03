@@ -2600,15 +2600,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 
 [[package]]
-name = "pinterest_downloader"
+name = "pinterest-cli"
+version = "0.1.0"
+dependencies = [
+ "pinterest-core",
+]
+
+[[package]]
+name = "pinterest-core"
+version = "0.1.0"
+dependencies = [
+ "regex",
+ "tiny_http",
+ "ureq",
+]
+
+[[package]]
+name = "pinterest-gui"
 version = "0.1.0"
 dependencies = [
  "eframe",
  "egui_extras",
- "regex",
+ "pinterest-core",
  "rfd",
- "tiny_http",
- "ureq",
 ]
 
 [[package]]

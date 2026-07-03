@@ -1,32 +1,14 @@
-/// Extrai o link de download de um vídeo do Pinterest a partir da URL do pin.
-///
-/// Faz uma requisição HTTP para a página do pin e procura por um link `.mp4`
-/// no HTML retornado.
 use regex::Regex;
 use std::io::Read;
 
-/// Erros que podem ocorrer durante a extração ou download do vídeo.
 #[derive(Debug)]
 pub enum DownloadError {
-    /// A requisição HTTP falhou.
     Request(String),
-    /// Não foi possível encontrar um link de vídeo na página.
     VideoNotFound,
-    /// Falha ao fazer download do vídeo.
     DownloadFailed(String),
-    /// Erro de E/S ao salvar o arquivo.
     IoError(String),
 }
 
-/// Extrai a URL de download do vídeo a partir da URL do pin do Pinterest.
-///
-/// # Exemplo
-///
-/// ```ignore
-/// let url = extract_download_url("https://in.pinterest.com/pin/879890845950202614/").unwrap();
-/// println!("{url}");
-/// // https://v1.pinimg.com/videos/iht/720p/b7/1d/60/b71d60335f58562e9d2da8d0e06e4013.mp4
-/// ```
 pub fn extract_download_url(pin_url: &str) -> Result<String, DownloadError> {
     let normalized_url = normalize_url(pin_url);
     let html = fetch_page(&normalized_url).map_err(DownloadError::Request)?;
@@ -66,13 +48,11 @@ fn find_mp4_url(html: &str) -> Option<String> {
     Some(url)
 }
 
-/// Extrai o nome do arquivo a partir da URL de download.
 pub fn filename_from_url(url: &str) -> Option<String> {
     let last_segment = url.split('/').last().unwrap_or("");
     if last_segment.is_empty() || !last_segment.contains('.') {
         return None;
     }
-    // Remove qualquer query string ou fragmento
     let name = last_segment.split('?').next().unwrap_or(last_segment);
     let name = name.split('#').next().unwrap_or(name);
     if name.is_empty() {
@@ -82,7 +62,6 @@ pub fn filename_from_url(url: &str) -> Option<String> {
     }
 }
 
-/// Faz o download do vídeo a partir da URL e salva no caminho de destino.
 pub fn download_video(
     download_url: &str,
     destination: &std::path::Path,
@@ -134,7 +113,6 @@ mod tests {
 
     #[test]
     fn find_mp4_url_handles_real_sample() {
-        // Trecho real do HTML do Pinterest (urls sem escape)
         let html = r#"<script>
             const __INITIAL_STATE__ = {"resources":{"data":{"https://in.pinterest.com/pin/879890845950202614/":{"data":{"pin":{"video_list":{"V_HLSV4":{"url":"https://v1.pinimg.com/videos/iht/hls/b7/1d/60/b71d60335f58562e9d2da8d0e06e4013.m3u8"},"V_720P":{"url":"https://v1.pinimg.com/videos/iht/720p/b7/1d/60/b71d60335f58562e9d2da8d0e06e4013.mp4"}}}}}}}};</script>"#;
         let url = find_mp4_url(html);
@@ -185,7 +163,6 @@ mod tests {
 
     #[test]
     fn download_error_display() {
-        // Apenas verifica que podemos criar os erros
         let err1 = DownloadError::Request("timeout".into());
         let err2 = DownloadError::VideoNotFound;
         assert!(format!("{err1:?}").contains("Request"));
@@ -225,13 +202,11 @@ mod tests {
 
     #[test]
     fn download_video_saves_file_when_successful() {
-        // Usamos um servidor HTTP local para simular um download bem-sucedido.
         let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
         let port = server.server_addr().to_ip().unwrap().port();
         let url = format!("http://127.0.0.1:{port}/video.mp4");
 
         let dest = std::env::temp_dir().join("test_download_output.mp4");
-        // Remove se existir
         let _ = std::fs::remove_file(&dest);
 
         let handle = std::thread::spawn(move || {
@@ -250,7 +225,6 @@ mod tests {
         let content = std::fs::read_to_string(&dest).unwrap();
         assert_eq!(content, "fake mp4 content");
 
-        // Limpeza
         let _ = std::fs::remove_file(&dest);
     }
 }

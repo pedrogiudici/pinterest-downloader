@@ -1,0 +1,11 @@
+[package]
+name = "pinterest-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ureq = { version = "2.12.1", features = ["tls"] }
+regex = "1.11.1"
+
+[dev-dependencies]
+tiny_http = "0.12"

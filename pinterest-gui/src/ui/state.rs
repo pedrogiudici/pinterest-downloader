@@ -1,4 +1,4 @@
-use crate::output::DownloadId;
+use pinterest_core::DownloadId;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct TextInputState {

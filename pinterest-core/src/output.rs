@@ -20,10 +20,6 @@ pub enum DownloadEventKind {
     Failed(String),
 }
 
-/// Abstrai o processamento do formulário enviado pela interface.
-///
-/// Em produção, a implementação padrão extrai o link de download a partir da
-/// URL do pin e baixa o vídeo para o diretório escolhido pelo usuário.
 pub trait Output {
     fn handle_submission(&mut self, pin_url: &str, directory_path: &str, id: DownloadId);
 
