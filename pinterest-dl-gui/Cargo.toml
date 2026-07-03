@@ -1,6 +1,6 @@
 [package]
 name = "pinterest-dl-gui"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Native GUI for PinterestDownloader — download Pinterest videos with a desktop interface (egui)"
 license = "MIT"

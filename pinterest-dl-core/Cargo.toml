@@ -1,6 +1,6 @@
 [package]
 name = "pinterest-dl-core"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Core download logic for PinterestDownloader — URL extraction, file download, and event system"
 license = "MIT"
