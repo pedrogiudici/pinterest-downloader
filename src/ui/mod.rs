@@ -4,5 +4,5 @@ mod state;
 mod theme;
 mod widgets;
 
-pub use app::TextPrinterApp;
+pub use app::DownloaderApp;
 pub use state::TextInputState;

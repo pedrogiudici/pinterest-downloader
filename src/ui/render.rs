@@ -3,14 +3,14 @@ use eframe::egui;
 use crate::icons::{draw_icon, Icon};
 use crate::output::Output;
 
-use super::app::TextPrinterApp;
+use super::app::DownloaderApp;
 use super::state::DownloadStatus;
 use super::theme::{
     ACCENT, ACCENT_HOVER, BORDER, CARD, CARD_SOFT, DANGER, MUTED, TEXT,
 };
 use super::widgets::{compact_path, icon_button};
 
-impl<O: Output> TextPrinterApp<O> {
+impl<O: Output> DownloaderApp<O> {
     pub(super) fn destination_button_label(&self) -> String {
         match self.state.directory_path() {
             "" => "Selecionar pasta".to_owned(),
@@ -126,7 +126,7 @@ impl<O: Output> TextPrinterApp<O> {
                                 draw_icon(ui, Icon::Link, 20.0, MUTED);
                                 ui.add_space(8.0);
                                 let text_field = ui.add(
-                                    egui::TextEdit::singleline(&mut self.state.text)
+                                    egui::TextEdit::singleline(&mut self.state.url)
                                         .desired_width(input_width - 42.0)
                                         .hint_text("https://br.pinterest.com/pin/..."),
                                 );

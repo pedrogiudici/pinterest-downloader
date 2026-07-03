@@ -33,11 +33,11 @@ pub trait Output {
 }
 
 #[derive(Debug, Default, Clone)]
-pub struct ConsoleOutput {
+pub struct DownloadWorker {
     events: Arc<Mutex<Vec<DownloadEvent>>>,
 }
 
-impl ConsoleOutput {
+impl DownloadWorker {
     fn push_event(events: &Arc<Mutex<Vec<DownloadEvent>>>, event: DownloadEvent) {
         if let Ok(mut events) = events.lock() {
             events.push(event);
@@ -45,7 +45,7 @@ impl ConsoleOutput {
     }
 }
 
-impl Output for ConsoleOutput {
+impl Output for DownloadWorker {
     fn handle_submission(&mut self, pin_url: &str, directory_path: &str, id: DownloadId) {
         let pin_url = pin_url.to_owned();
         let directory_path = directory_path.to_owned();

@@ -2,32 +2,32 @@ use std::time::Duration;
 
 use eframe::egui;
 
-use crate::output::{ConsoleOutput, DownloadEvent, DownloadEventKind, DownloadId, Output};
+use crate::output::{DownloadWorker, DownloadEvent, DownloadEventKind, DownloadId, Output};
 
 use super::state::{DownloadCardState, DownloadStatus, TextInputState};
 use super::theme::{configure_download_theme, BACKGROUND};
 
 #[derive(Debug)]
-pub struct TextPrinterApp<O = ConsoleOutput> {
+pub struct DownloaderApp<O = DownloadWorker> {
     pub(super) state: TextInputState,
     pub(super) output: O,
     pub(super) downloads: Vec<DownloadCardState>,
     pub(super) next_download_id: DownloadId,
 }
 
-impl TextPrinterApp<ConsoleOutput> {
+impl DownloaderApp<DownloadWorker> {
     pub fn new() -> Self {
-        Self::with_output(ConsoleOutput::default())
+        Self::with_output(DownloadWorker::default())
     }
 }
 
-impl Default for TextPrinterApp<ConsoleOutput> {
+impl Default for DownloaderApp<DownloadWorker> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<O: Output> TextPrinterApp<O> {
+impl<O: Output> DownloaderApp<O> {
     pub fn with_output(output: O) -> Self {
         Self {
             state: TextInputState::new(),
@@ -54,7 +54,7 @@ impl<O: Output> TextPrinterApp<O> {
             status: DownloadStatus::Downloading,
         });
         self.output
-            .handle_submission(self.state.text(), self.state.directory_path(), id);
+            .handle_submission(            self.state.url(), self.state.directory_path(), id);
     }
 
     pub fn downloads(&self) -> &[DownloadCardState] {
@@ -106,7 +106,7 @@ impl<O: Output> TextPrinterApp<O> {
 
 }
 
-impl<O: Output> eframe::App for TextPrinterApp<O> {
+impl<O: Output> eframe::App for DownloaderApp<O> {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.apply_download_events();
         if self
@@ -170,7 +170,7 @@ mod tests {
 
     #[test]
     fn destination_button_label_keeps_long_path_inside_button() {
-        let mut app = TextPrinterApp::with_output(MemoryOutput::default());
+        let mut app = DownloaderApp::with_output(MemoryOutput::default());
         app.state_mut()
             .set_directory_path("/home/pedro/downloads/pinterest/videos");
 
@@ -179,8 +179,8 @@ mod tests {
 
     #[test]
     fn submit_sends_current_text_and_directory_path_to_output() {
-        let mut app = TextPrinterApp::with_output(MemoryOutput::default());
-        app.state_mut().set_text("texto digitado");
+        let mut app = DownloaderApp::with_output(MemoryOutput::default());
+        app.state_mut().set_url("https://br.pinterest.com/pin/123");
         app.state_mut().set_directory_path("/home/pedro/downloads");
 
         app.submit();
@@ -188,14 +188,14 @@ mod tests {
         let output = app.into_output();
         assert_eq!(
             output.lines,
-            vec!["texto digitado", "/home/pedro/downloads"]
+            vec!["https://br.pinterest.com/pin/123", "/home/pedro/downloads"]
         );
         assert_eq!(output.ids, vec![1]);
     }
 
     #[test]
     fn submit_adds_download_card_as_downloading() {
-        let mut app = TextPrinterApp::with_output(MemoryOutput::default());
+        let mut app = DownloaderApp::with_output(MemoryOutput::default());
 
         app.submit();
 
@@ -207,7 +207,7 @@ mod tests {
 
     #[test]
     fn download_events_update_card_filename_and_status() {
-        let mut app = TextPrinterApp::with_output(MemoryOutput {
+        let mut app = DownloaderApp::with_output(MemoryOutput {
             events: vec![
                 DownloadEvent {
                     id: 1,
@@ -230,7 +230,7 @@ mod tests {
 
     #[test]
     fn dismiss_download_removes_finished_download_from_history() {
-        let mut app = TextPrinterApp::with_output(MemoryOutput::default());
+        let mut app = DownloaderApp::with_output(MemoryOutput::default());
         app.submit();
         app.apply_events(vec![DownloadEvent {
             id: 1,
@@ -244,7 +244,7 @@ mod tests {
 
     #[test]
     fn dismiss_download_keeps_active_download() {
-        let mut app = TextPrinterApp::with_output(MemoryOutput::default());
+        let mut app = DownloaderApp::with_output(MemoryOutput::default());
         app.submit();
 
         app.dismiss_download(1);
@@ -255,7 +255,7 @@ mod tests {
 
     #[test]
     fn clear_finished_downloads_keeps_active_downloads() {
-        let mut app = TextPrinterApp::with_output(MemoryOutput::default());
+        let mut app = DownloaderApp::with_output(MemoryOutput::default());
         app.submit();
         app.submit();
         app.apply_events(vec![DownloadEvent {

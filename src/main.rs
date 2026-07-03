@@ -1,4 +1,4 @@
-use pinterest_downloader::TextPrinterApp;
+use pinterest_downloader::DownloaderApp;
 
 fn main() -> eframe::Result<()> {
     let options = eframe::NativeOptions::default();
@@ -8,7 +8,7 @@ fn main() -> eframe::Result<()> {
         options,
         Box::new(|creation_context| {
             egui_extras::install_image_loaders(&creation_context.egui_ctx);
-            Ok(Box::new(TextPrinterApp::new()))
+            Ok(Box::new(DownloaderApp::new()))
         }),
     )
 }

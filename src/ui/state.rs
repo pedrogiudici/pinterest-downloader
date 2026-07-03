@@ -2,7 +2,7 @@ use crate::output::DownloadId;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct TextInputState {
-    pub(super) text: String,
+    pub(super) url: String,
     pub(super) directory_path: String,
 }
 
@@ -11,12 +11,12 @@ impl TextInputState {
         Self::default()
     }
 
-    pub fn text(&self) -> &str {
-        &self.text
+    pub fn url(&self) -> &str {
+        &self.url
     }
 
-    pub fn set_text(&mut self, text: impl Into<String>) {
-        self.text = text.into();
+    pub fn set_url(&mut self, url: impl Into<String>) {
+        self.url = url.into();
     }
 
     pub fn directory_path(&self) -> &str {
@@ -70,17 +70,17 @@ mod tests {
     fn state_starts_empty() {
         let state = TextInputState::new();
 
-        assert_eq!(state.text(), "");
+        assert_eq!(state.url(), "");
         assert_eq!(state.directory_path(), "");
     }
 
     #[test]
-    fn state_updates_text() {
+    fn state_updates_url() {
         let mut state = TextInputState::new();
 
-        state.set_text("ol\u{e1} mundo");
+        state.set_url("https://br.pinterest.com/pin/123");
 
-        assert_eq!(state.text(), "ol\u{e1} mundo");
+        assert_eq!(state.url(), "https://br.pinterest.com/pin/123");
     }
 
     #[test]
