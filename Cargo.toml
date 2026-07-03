@@ -3,6 +3,14 @@ name = "pinterest_downloader"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "gui"
+path = "src/bin/gui.rs"
+
+[[bin]]
+name = "cli"
+path = "src/bin/cli.rs"
+
 [dependencies]
 eframe = "0.35.0"
 egui_extras = { version = "0.35.0", features = ["svg"] }
