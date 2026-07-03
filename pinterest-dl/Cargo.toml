@@ -2,6 +2,11 @@
 name = "pinterest-dl"
 version = "0.1.0"
 edition = "2024"
+description = "CLI for PinterestDownloader — download Pinterest videos from the terminal"
+license = "MIT"
+repository = "https://github.com/pedrogiudici/pinterest-downloader"
+keywords = ["pinterest", "download", "video", "scraper", "cli"]
+categories = ["command-line-utilities", "multimedia"]
 
 [dependencies]
-pinterest-dl-core = { path = "../pinterest-dl-core" }
+pinterest-dl-core = { version = "0.1.0", path = "../pinterest-dl-core" }

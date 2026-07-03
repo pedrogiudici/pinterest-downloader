@@ -2,9 +2,14 @@
 name = "pinterest-dl-gui"
 version = "0.1.0"
 edition = "2024"
+description = "Native GUI for PinterestDownloader — download Pinterest videos with a desktop interface (egui)"
+license = "MIT"
+repository = "https://github.com/pedrogiudici/pinterest-downloader"
+keywords = ["pinterest", "download", "video", "scraper", "gui"]
+categories = ["command-line-utilities", "multimedia"]
 
 [dependencies]
-pinterest-dl-core = { path = "../pinterest-dl-core" }
+pinterest-dl-core = { version = "0.1.0", path = "../pinterest-dl-core" }
 eframe = "0.35.0"
 egui_extras = { version = "0.35.0", features = ["svg"] }
 rfd = "0.15.4"
