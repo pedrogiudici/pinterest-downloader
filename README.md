@@ -1,8 +1,11 @@
 # Pinterest Downloader
 
+[![Crates.io][crates-badge]][crates-url]
 [![MIT License][license-badge]][license-url]
 [![Rust 1.85+][rust-badge]][rust-url]
 
+[crates-badge]: https://img.shields.io/crates/v/pinterest-dl.svg
+[crates-url]: https://crates.io/crates/pinterest-dl
 [license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license-url]: https://github.com/pedrogiudici/pinterest-downloader/blob/main/LICENSE
 [rust-badge]: https://img.shields.io/badge/rust-1.85+-dea584.svg
@@ -21,23 +24,30 @@
 - Native graphical interface (GUI via egui) with folder picker
 - Concurrent downloads with real-time status feedback
 
+## Installation
+
+```bash
+cargo install pinterest-dl
+cargo install pinterest-dl-gui
+```
+
 ## Usage
 
 **CLI:**
 ```bash
 # Download to current directory
-cargo run --bin pinterest-dl -- https://br.pinterest.com/pin/123
+pinterest-dl https://br.pinterest.com/pin/123
 
 # Download to a specific folder
-cargo run --bin pinterest-dl -- https://br.pinterest.com/pin/123 ~/Downloads
+pinterest-dl https://br.pinterest.com/pin/123 ~/Downloads
 ```
 
 **GUI:**
 ```bash
-cargo run --bin pinterest-dl-gui
+pinterest-dl-gui
 ```
 
-## Building
+## Building from source
 
 ```bash
 # Prerequisites: Rust 1.85+ (edition 2024)
@@ -50,6 +60,13 @@ cargo build --release -p pinterest-dl
 
 # Build only GUI
 cargo build --release -p pinterest-dl-gui
+```
+
+### Run without installing
+
+```bash
+cargo run --bin pinterest-dl -- https://br.pinterest.com/pin/123
+cargo run --bin pinterest-dl-gui
 ```
 
 ## Tests
