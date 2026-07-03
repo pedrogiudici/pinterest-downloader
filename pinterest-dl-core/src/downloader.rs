@@ -49,7 +49,7 @@ fn find_mp4_url(html: &str) -> Option<String> {
 }
 
 pub fn filename_from_url(url: &str) -> Option<String> {
-    let last_segment = url.split('/').last().unwrap_or("");
+    let last_segment = url.split('/').next_back().unwrap_or("");
     if last_segment.is_empty() || !last_segment.contains('.') {
         return None;
     }
