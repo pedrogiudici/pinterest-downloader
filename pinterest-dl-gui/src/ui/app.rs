@@ -50,7 +50,7 @@ impl<O: Output> DownloaderApp<O> {
         self.next_download_id += 1;
         self.downloads.push(DownloadCardState {
             id,
-            filename: "Preparando download...".to_owned(),
+            filename: "Preparing download...".to_owned(),
             status: DownloadStatus::Downloading,
         });
         self.output
@@ -200,7 +200,7 @@ mod tests {
 
         assert_eq!(app.downloads().len(), 1);
         assert_eq!(app.downloads()[0].id(), 1);
-        assert_eq!(app.downloads()[0].filename(), "Preparando download...");
+        assert_eq!(app.downloads()[0].filename(), "Preparing download...");
         assert_eq!(app.downloads()[0].status(), &DownloadStatus::Downloading);
     }
 

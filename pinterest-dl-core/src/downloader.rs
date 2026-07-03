@@ -36,7 +36,7 @@ fn fetch_page(url: &str) -> Result<String, String> {
 
     let body = response
         .into_string()
-        .map_err(|e| format!("erro ao ler corpo da resposta: {e}"))?;
+        .map_err(|e| format!("error reading response body: {e}"))?;
 
     Ok(body)
 }
@@ -79,10 +79,10 @@ pub fn download_video(
     response
         .into_reader()
         .read_to_end(&mut body)
-        .map_err(|e| DownloadError::IoError(format!("erro ao ler resposta: {e}")))?;
+        .map_err(|e| DownloadError::IoError(format!("error reading response: {e}")))?;
 
     std::fs::write(destination, &body)
-        .map_err(|e| DownloadError::IoError(format!("erro ao salvar arquivo: {e}")))?;
+        .map_err(|e| DownloadError::IoError(format!("error saving file: {e}")))?;
 
     Ok(())
 }

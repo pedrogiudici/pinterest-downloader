@@ -14,7 +14,7 @@ use super::widgets::{compact_path, icon_button};
 impl<O: Output> DownloaderApp<O> {
     pub(super) fn destination_button_label(&self) -> String {
         match self.state.directory_path() {
-            "" => "Selecionar pasta".to_owned(),
+            "" => "Select folder".to_owned(),
             path => compact_path(path, 14),
         }
     }
@@ -42,12 +42,12 @@ impl<O: Output> DownloaderApp<O> {
                             );
                             ui.add_space(4.0);
                             let (label, color) = match &download.status {
-                                DownloadStatus::Downloading => ("Baixando", ACCENT),
+                                DownloadStatus::Downloading => ("Downloading", ACCENT),
                                 DownloadStatus::Completed => {
-                                    ("Conclu\u{ed}do", egui::Color32::from_rgb(79, 214, 123))
+                                    ("Completed", egui::Color32::from_rgb(79, 214, 123))
                                 }
                                 DownloadStatus::Failed(_) => {
-                                    ("Erro", egui::Color32::from_rgb(255, 107, 107))
+                                    ("Error", egui::Color32::from_rgb(255, 107, 107))
                                 }
                             };
                             ui.label(egui::RichText::new(label).size(14.0).color(color));
@@ -63,7 +63,7 @@ impl<O: Output> DownloaderApp<O> {
                                         CARD_SOFT,
                                         egui::Stroke::new(1.0, DANGER),
                                         DANGER,
-                                        "Remover",
+                                        "Remove",
                                         Icon::Trash,
                                     )
                                     .clicked()
@@ -96,7 +96,7 @@ impl<O: Output> DownloaderApp<O> {
                     ui.add_space(10.0);
                     ui.vertical(|ui| {
                         ui.label(
-                            egui::RichText::new("Novo Download")
+                            egui::RichText::new("New Download")
                                 .size(22.0)
                                 .strong()
                                 .color(TEXT),
@@ -104,7 +104,7 @@ impl<O: Output> DownloaderApp<O> {
                         ui.add_space(6.0);
                         ui.label(
                             egui::RichText::new(
-                                "Cole o link do Pinterest que deseja baixar",
+                                "Paste the Pinterest link you want to download",
                             )
                             .size(15.0)
                             .color(MUTED),
@@ -129,7 +129,7 @@ impl<O: Output> DownloaderApp<O> {
                                 let text_field = ui.add(
                                     egui::TextEdit::singleline(&mut self.state.url)
                                         .desired_width(input_width - 42.0)
-                                        .hint_text("https://br.pinterest.com/pin/..."),
+                                        .hint_text("https://pinterest.com/pin/..."),
                                 );
 
                                 let enter_pressed = text_field.lost_focus()
@@ -165,7 +165,7 @@ impl<O: Output> DownloaderApp<O> {
                         ACCENT,
                         egui::Stroke::new(1.0, ACCENT_HOVER),
                         TEXT,
-                        "Baixar",
+                        "Download",
                         Icon::Download,
                     )
                     .clicked()
