@@ -44,8 +44,6 @@ pub struct DownloadCardState {
     pub(super) status: DownloadStatus,
 }
 
-impl DownloadCardState {}
-
 #[cfg(test)]
 mod tests {
     use super::*;
