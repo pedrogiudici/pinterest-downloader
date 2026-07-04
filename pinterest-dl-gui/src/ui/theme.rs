@@ -8,6 +8,8 @@ pub const TEXT: egui::Color32 = egui::Color32::from_rgb(238, 241, 247);
 pub const MUTED: egui::Color32 = egui::Color32::from_rgb(165, 171, 187);
 pub const ACCENT: egui::Color32 = egui::Color32::from_rgb(105, 76, 255);
 pub const ACCENT_HOVER: egui::Color32 = egui::Color32::from_rgb(125, 91, 255);
+pub const SUCCESS: egui::Color32 = egui::Color32::from_rgb(79, 214, 123);
+pub const ERROR: egui::Color32 = egui::Color32::from_rgb(255, 107, 107);
 pub const DANGER: egui::Color32 = egui::Color32::from_rgb(220, 53, 69);
 
 pub fn configure_download_theme(ctx: &egui::Context) {

@@ -6,7 +6,9 @@ use crate::icons::{Icon, draw_icon};
 
 use super::app::DownloaderApp;
 use super::state::DownloadStatus;
-use super::theme::{ACCENT, ACCENT_HOVER, BORDER, CARD, CARD_SOFT, DANGER, MUTED, TEXT};
+use super::theme::{
+    ACCENT, ACCENT_HOVER, BORDER, CARD, CARD_SOFT, DANGER, ERROR, MUTED, SUCCESS, TEXT,
+};
 use super::widgets::{compact_path, icon_button};
 
 impl<O: Output> DownloaderApp<O> {
@@ -41,12 +43,8 @@ impl<O: Output> DownloaderApp<O> {
                             ui.add_space(4.0);
                             let (label, color) = match &download.status {
                                 DownloadStatus::Downloading => ("Downloading", ACCENT),
-                                DownloadStatus::Completed => {
-                                    ("Completed", egui::Color32::from_rgb(79, 214, 123))
-                                }
-                                DownloadStatus::Failed(_) => {
-                                    ("Error", egui::Color32::from_rgb(255, 107, 107))
-                                }
+                                DownloadStatus::Completed => ("Completed", SUCCESS),
+                                DownloadStatus::Failed(_) => ("Error", ERROR),
                             };
                             ui.label(egui::RichText::new(label).size(14.0).color(color));
                         });
