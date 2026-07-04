@@ -1,5 +1,12 @@
 use regex::Regex;
 use std::io::Read;
+use std::sync::LazyLock;
+
+const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 \
+ (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+static MP4_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#""(https://[^"]+\.mp4[^"]*)""#).unwrap());
 
 #[derive(Debug)]
 pub enum DownloadError {
@@ -26,11 +33,7 @@ fn normalize_url(url: &str) -> String {
 
 fn fetch_page(url: &str) -> Result<String, String> {
     let response = ureq::get(url)
-        .set(
-            "User-Agent",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 \
-             (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        )
+        .set("User-Agent", USER_AGENT)
         .call()
         .map_err(|e| format!("{e}"))?;
 
@@ -42,8 +45,7 @@ fn fetch_page(url: &str) -> Result<String, String> {
 }
 
 fn find_mp4_url(html: &str) -> Option<String> {
-    let re = Regex::new(r#""(https://[^"]+\.mp4[^"]*)""#).ok()?;
-    let cap = re.captures(html)?;
+    let cap = MP4_RE.captures(html)?;
     let url = cap.get(1)?.as_str().replace("\\/", "/");
     Some(url)
 }
@@ -67,11 +69,7 @@ pub fn download_video(
     destination: &std::path::Path,
 ) -> Result<(), DownloadError> {
     let response = ureq::get(download_url)
-        .set(
-            "User-Agent",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 \
-             (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        )
+        .set("User-Agent", USER_AGENT)
         .call()
         .map_err(|e| DownloadError::DownloadFailed(format!("{e}")))?;
 
