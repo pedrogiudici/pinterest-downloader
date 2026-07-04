@@ -124,10 +124,18 @@ mod tests {
     }
 
     #[test]
-    fn normalize_url_keeps_url_with_scheme() {
+    fn normalize_url_keeps_url_with_https_scheme() {
         assert_eq!(
             normalize_url("https://www.pinterest.com/pin/879890845950202614/"),
             "https://www.pinterest.com/pin/879890845950202614/"
+        );
+    }
+
+    #[test]
+    fn normalize_url_keeps_url_with_http_scheme() {
+        assert_eq!(
+            normalize_url("http://www.pinterest.com/pin/123/"),
+            "http://www.pinterest.com/pin/123/"
         );
     }
 
