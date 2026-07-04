@@ -2,13 +2,11 @@ use eframe::egui;
 
 use pinterest_dl_core::Output;
 
-use crate::icons::{draw_icon, Icon};
+use crate::icons::{Icon, draw_icon};
 
 use super::app::DownloaderApp;
 use super::state::DownloadStatus;
-use super::theme::{
-    ACCENT, ACCENT_HOVER, BORDER, CARD, CARD_SOFT, DANGER, MUTED, TEXT,
-};
+use super::theme::{ACCENT, ACCENT_HOVER, BORDER, CARD, CARD_SOFT, DANGER, MUTED, TEXT};
 use super::widgets::{compact_path, icon_button};
 
 impl<O: Output> DownloaderApp<O> {
@@ -103,11 +101,9 @@ impl<O: Output> DownloaderApp<O> {
                         );
                         ui.add_space(6.0);
                         ui.label(
-                            egui::RichText::new(
-                                "Paste the Pinterest link you want to download",
-                            )
-                            .size(15.0)
-                            .color(MUTED),
+                            egui::RichText::new("Paste the Pinterest link you want to download")
+                                .size(15.0)
+                                .color(MUTED),
                         );
                     });
                 });

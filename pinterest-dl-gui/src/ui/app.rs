@@ -5,7 +5,7 @@ use eframe::egui;
 use pinterest_dl_core::{DownloadEvent, DownloadEventKind, DownloadId, DownloadWorker, Output};
 
 use super::state::{DownloadCardState, DownloadStatus, TextInputState};
-use super::theme::{configure_download_theme, BACKGROUND};
+use super::theme::{BACKGROUND, configure_download_theme};
 
 #[derive(Debug)]
 pub struct DownloaderApp<O = DownloadWorker> {
@@ -82,7 +82,6 @@ impl<O: Output> DownloaderApp<O> {
             self.state.set_directory_path(path.display().to_string());
         }
     }
-
 }
 
 impl<O: Output> eframe::App for DownloaderApp<O> {

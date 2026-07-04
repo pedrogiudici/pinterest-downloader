@@ -39,8 +39,7 @@ impl Config {
 
 fn run(config: Config) -> Result<(), String> {
     println!("Extracting download URL...");
-    let download_url = extract_download_url(&config.pin_url)
-        .map_err(|e| format!("{e:?}"))?;
+    let download_url = extract_download_url(&config.pin_url).map_err(|e| format!("{e:?}"))?;
 
     let filename = filename_from_url(&download_url).unwrap_or_else(|| "video.mp4".to_owned());
     let dest = config.dest_dir.join(&filename);

@@ -1,6 +1,6 @@
 use eframe::egui;
 
-use crate::icons::{colored_source, Icon};
+use crate::icons::{Icon, colored_source};
 
 pub fn icon_button(
     ui: &mut egui::Ui,
