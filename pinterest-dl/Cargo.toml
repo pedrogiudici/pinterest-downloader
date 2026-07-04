@@ -10,4 +10,4 @@ categories = ["command-line-utilities", "multimedia"]
 readme = "../README.md"
 
 [dependencies]
-pinterest-dl-core = { version = "0.1.0", path = "../pinterest-dl-core" }
+pinterest-dl-core = { version = "0.1.1", path = "../pinterest-dl-core" }
