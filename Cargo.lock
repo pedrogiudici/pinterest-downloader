@@ -2601,14 +2601,14 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 
 [[package]]
 name = "pinterest-dl"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "pinterest-dl-core",
 ]
 
 [[package]]
 name = "pinterest-dl-core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "regex",
  "tiny_http",
@@ -2617,7 +2617,7 @@ dependencies = [
 
 [[package]]
 name = "pinterest-dl-gui"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "eframe",
  "egui_extras",
