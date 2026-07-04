@@ -25,8 +25,6 @@ struct Config {
 
 impl Config {
     fn build(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
-        args.next();
-
         let pin_url = args.next().ok_or("Pin URL is required")?;
         let dest_dir = args
             .next()
